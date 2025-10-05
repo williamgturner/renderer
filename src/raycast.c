@@ -32,7 +32,6 @@ WallHitDTO *raycastLoop(int numRays, GameSpace *game) {
   return hits;
 }
 
-// Vertical march
 // Vertical march (horizontal grid lines)
 WallHitDTO marchY(vec4 ray, Map *map, int worldScale) {
   WallHitDTO result = {.distance = FLT_MAX, .wallType = 0, .textureX = 0};
