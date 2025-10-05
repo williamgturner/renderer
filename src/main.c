@@ -13,20 +13,6 @@ static Uint64 last_time = 0;
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 
-#define NUM_POINTS 500
-#define MIN_PIXELS_PER_SECOND 30  /* move at least this many pixels per second. */
-#define MAX_PIXELS_PER_SECOND 60  /* move this many pixels per second at most. */
-
-/* (track everything as parallel arrays instead of a array of structs,
-   so we can pass the coordinates to the renderer in a single function call.) */
-
-/* Points are plotted as a set of X and Y coordinates.
-   (0, 0) is the top left of the window, and larger numbers go down
-   and to the right. This isn't how geometry works, but this is pretty
-   standard in 2D graphics. */
-static SDL_FPoint points[NUM_POINTS];
-static float point_speeds[NUM_POINTS];
-
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
@@ -52,7 +38,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
     ctx->width = WINDOW_WIDTH;
     ctx->height = WINDOW_HEIGHT;
 
-    return SDL_APP_CONTINUE;  /* carry on with the program! */
+    return SDL_APP_CONTINUE;
 }
 
 /* This function runs when a new event (mouse input, keypresses, etc) occurs. */
@@ -73,15 +59,10 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     last_time = now;
 
-   /* as you can see from this, rendering draws over whatever was drawn before it. */
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);  /* black, full alpha */
-    SDL_RenderClear(renderer);  /* start with a blank canvas. */
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);  /* white, full alpha */
-    drawWall(ctx, 400, 300);
-    SDL_RenderPresent(renderer);  /* put it all on the screen! */
-
-    return SDL_APP_CONTINUE;  /* carry on with the program! */
-}
+    SDL_RenderClear(renderer);    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);    drawWall(ctx, 400, 300);
+    SDL_RenderPresent(renderer);
+    return SDL_APP_CONTINUE;}
 
 /* This function runs once at shutdown. */
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
