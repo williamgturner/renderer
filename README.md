@@ -11,10 +11,8 @@ A raycasting renderer inspired by _Wolfenstein 3D_
 
 ```bash
 cd renderer
-mkdir build
-cd build
-cmake ..
-cmake --build .
+cmake -S . -B build
+cmake --build build
 cd build
 ./renderer
 ```
