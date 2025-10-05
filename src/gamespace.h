@@ -1,10 +1,10 @@
 #ifndef GAMESPACE_H
 #define GAMESPACE_H
 
-#include "player.h"
+#include "camera.h"
 
 typedef struct {
-  player camera;
+  camera camera;
   int worldScale;
   int map[100];
 } GameSpace;

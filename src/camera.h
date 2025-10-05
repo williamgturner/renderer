@@ -5,7 +5,8 @@
 
 typedef struct {
   vec4 pos;
-  double speed;
-} player;
+  float speed;
+  float fov;
+} camera;
 
 #endif
