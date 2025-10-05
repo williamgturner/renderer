@@ -21,9 +21,9 @@ cd build
 
 ## controls
 
-Q, E - Strafe left/right
-W, S - Move forward/back
-A, D - Rotate left/right
+- Q, E - Strafe left/right
+- W, S - Move forward/back
+- A, D - Rotate left/right
 
 ![raycast demo](assets/img/demo.png)
 
