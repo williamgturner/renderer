@@ -1,6 +1,7 @@
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <stdlib.h>
 
@@ -43,9 +44,22 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     return SDL_APP_FAILURE;
   }
 
+  SDL_Surface *wallSurface = IMG_Load("../assets/textures/grid.png");
+  if (!wallSurface) {
+    return SDL_APP_FAILURE;
+  }
+
+  // Create texture once and assign it to ctx
   ctx = malloc(sizeof(RenderContext));
   ctx->window = window;
   ctx->renderer = renderer;
+  ctx->wallTexture = SDL_CreateTextureFromSurface(renderer, wallSurface);
+  SDL_DestroySurface(wallSurface);
+
+  if (!ctx->wallTexture) {
+    SDL_Log("Failed to create wall texture: %s", SDL_GetError());
+    return SDL_APP_FAILURE;
+  }
   ctx->width = WINDOW_WIDTH;
   ctx->height = WINDOW_HEIGHT;
 
@@ -76,13 +90,11 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
   const Uint64 now = SDL_GetTicks();
-  const float elapsed =
-      ((float)(now - last_time)) / 1000.0f;
+  const float elapsed = ((float)(now - last_time)) / 1000.0f;
   int i;
   last_time = now;
 
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0,
-                         SDL_ALPHA_OPAQUE);
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(renderer);
   handleInput(game, elapsed);
 
@@ -101,13 +113,17 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
+  if (ctx->wallTexture)
+    SDL_DestroyTexture(ctx->wallTexture);
+
   if (ctx) {
     if (ctx->font) {
       TTF_CloseFont(ctx->font);
     }
     free(ctx);
+
+    free_map(&game->map);
+    free(game);
+    TTF_Quit();
   }
-  free_map(&game->map);
-  free(game);
-  TTF_Quit();
 }

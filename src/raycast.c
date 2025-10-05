@@ -33,8 +33,9 @@ WallHitDTO *raycastLoop(int numRays, GameSpace *game) {
 }
 
 // Vertical march
+// Vertical march (horizontal grid lines)
 WallHitDTO marchY(vec4 ray, Map *map, int worldScale) {
-  WallHitDTO result = {.distance = FLT_MAX, .wallType = 0};
+  WallHitDTO result = {.distance = FLT_MAX, .wallType = 0, .textureX = 0};
   if (fabs(ray.dy) < 0.0001f)
     return result;
 
@@ -69,6 +70,10 @@ WallHitDTO marchY(vec4 ray, Map *map, int worldScale) {
       vec4 hitPoint = {newX, rayY, 0, 0};
       result.distance = distance(ray, hitPoint);
       result.wallType = wallType;
+      // Texture coordinate (horizontal wall)
+      result.textureX = fmodf(hitPoint.x, worldScale) / worldScale;
+      if (ray.dy > 0)
+        result.textureX = 1.0f - result.textureX;
       return result;
     }
 
@@ -76,9 +81,9 @@ WallHitDTO marchY(vec4 ray, Map *map, int worldScale) {
   }
 }
 
-// Horizontal march
+// Horizontal march (vertical grid lines)
 WallHitDTO marchX(vec4 ray, Map *map, int worldScale) {
-  WallHitDTO result = {.distance = FLT_MAX, .wallType = 0};
+  WallHitDTO result = {.distance = FLT_MAX, .wallType = 0, .textureX = 0};
   if (fabs(ray.dx) < 0.0001f)
     return result;
 
@@ -113,6 +118,10 @@ WallHitDTO marchX(vec4 ray, Map *map, int worldScale) {
       vec4 hitPoint = {rayX, newY, 0, 0};
       result.distance = distance(ray, hitPoint);
       result.wallType = wallType;
+      // Texture coordinate (vertical wall)
+      result.textureX = fmodf(hitPoint.y, worldScale) / worldScale;
+      if (ray.dx < 0)
+        result.textureX = 1.0f - result.textureX;
       return result;
     }
 

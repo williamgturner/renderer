@@ -4,6 +4,7 @@
 typedef struct {
   float distance;
   int wallType;
+  float textureX;
 } WallHitDTO;
 
 #endif

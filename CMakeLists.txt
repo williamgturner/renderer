@@ -8,6 +8,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 find_package(SDL3 REQUIRED)
 find_package(SDL3_ttf REQUIRED)
+find_package(SDL3_image REQUIRED)
 
 add_executable(renderer
     src/main.c
@@ -17,4 +18,4 @@ add_executable(renderer
     src/input.c
 )
 
-target_link_libraries(renderer PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf)
+target_link_libraries(renderer PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image)

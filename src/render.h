@@ -3,12 +3,14 @@
 
 #include "wallHitDto.h"
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
 typedef struct {
   SDL_Window *window;
   SDL_Renderer *renderer;
   TTF_Font *font;
+  SDL_Texture *wallTexture;
   int width;
   int height;
 } RenderContext;
