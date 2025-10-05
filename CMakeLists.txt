@@ -6,13 +6,10 @@ project(renderer)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
-# This assumes the SDL source is available in vendored/SDL
-add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+find_package(SDL3 REQUIRED)
+find_package(SDL3_ttf REQUIRED)
 
-add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
-
-# Create your game executable target as usual
-add_executable(renderer WIN32
+add_executable(renderer
     src/main.c
     src/render.c
     src/raycast.c
@@ -20,5 +17,4 @@ add_executable(renderer WIN32
     src/input.c
 )
 
-# Link to the actual SDL3 library.
-target_link_libraries(renderer PRIVATE SDL3_ttf::SDL3_ttf SDL3::SDL3)
+target_link_libraries(renderer PRIVATE SDL3::SDL3 SDL3_ttf::SDL3_ttf)
