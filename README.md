@@ -6,6 +6,7 @@ A raycasting renderer inspired by _Wolfenstein 3D_
 
 - [SDL3](https://wiki.libsdl.org/SDL3/FrontPage)
 - [SDL_ttf](https://wiki.libsdl.org/SDL3_ttf/FrontPage)
+- [SDL_image](https://wiki.libsdl.org/SDL3_image/FrontPage)
 
 ## usage
 
@@ -28,3 +29,4 @@ cd build
 ## acknowledgements
 
 Font: [Home Video Font](https://ggbot.itch.io/home-video-font)
+Texture: [Quake-like Sci-fi 64x64](https://level-eleven-games.itch.io/quake-like-texture-pack)
