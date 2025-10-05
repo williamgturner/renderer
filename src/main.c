@@ -1,6 +1,7 @@
 #define SDL_MAIN_USE_CALLBACKS 1  /* use the callbacks instead of main() */
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <stdlib.h>
 
 #include "render.h"
@@ -30,14 +31,27 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         return SDL_APP_FAILURE;
     }
 
-    last_time = SDL_GetTicks();
-    
+    if (!TTF_Init()) {
+        SDL_Log("Couldn't initialize SDL_ttf: %s\n", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+
     ctx = malloc(sizeof(RenderContext));
     ctx->window = window;
     ctx->renderer = renderer;
     ctx->width = WINDOW_WIDTH;
     ctx->height = WINDOW_HEIGHT;
 
+
+  /* Open the font */
+    ctx->font = TTF_OpenFont("../assets/fonts/HomeVideo-BLG6G.ttf", 30);
+    if (!ctx->font) {
+        SDL_Log("Couldn't open font: %s\n", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+
+    last_time = SDL_GetTicks();
+    
     return SDL_APP_CONTINUE;
 }
 
@@ -59,8 +73,16 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     last_time = now;
 
+
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);  /* black, full alpha */
-    SDL_RenderClear(renderer);    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);    drawWall(ctx, 400, 300);
+    SDL_RenderClear(renderer);
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    drawWall(ctx, 400, 300);
+    renderText(ctx, "Test...");
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
     SDL_RenderPresent(renderer);
     return SDL_APP_CONTINUE;}
 
@@ -68,5 +90,9 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
   free(ctx);
+  if (ctx->font) {
+        TTF_CloseFont(ctx->font);
+  }
+  TTF_Quit();
 }
 
