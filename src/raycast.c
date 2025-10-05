@@ -2,124 +2,118 @@
 #include "camera.h"
 #include "map.h"
 #include "vector4.h"
+#include "wallHitDto.h"
+#include <float.h>
 #include <math.h>
 #include <stdio.h>
 
-float *raycastLoop(int numRays, GameSpace *game) {
-  float *rayDistances = malloc(numRays * sizeof(float));
-  vec4 rayVec;
-  vec4 ray = vecRotate(game->camera.pos, (game->camera.fov / 2) * -1);
-  float rayDelta = (game->camera.fov) / numRays;
+// Main raycasting loop
+WallHitDTO *raycastLoop(int numRays, GameSpace *game) {
+  WallHitDTO *hits = malloc(numRays * sizeof(WallHitDTO));
+  if (!hits)
+    return NULL;
+
+  vec4 baseDir = game->camera.pos;
 
   for (int x = 0; x < numRays; x++) {
-    float distX = 0.0f;
-    float distY = 0.0f;
-
     float angleFromCenter = ((float)x / numRays - 0.5f) * game->camera.fov;
+    vec4 rayVec = vecRotate(baseDir, angleFromCenter);
 
-    rayVec = vecRotate(ray, rayDelta * x);
-    distY = marchY(rayVec, &game->map, game->worldScale);
-    distX = marchX(rayVec, &game->map, game->worldScale);
+    WallHitDTO hitY = marchY(rayVec, &game->map, game->worldScale);
+    WallHitDTO hitX = marchX(rayVec, &game->map, game->worldScale);
 
-    float dist = (distY < distX) ? distY : distX;
+    WallHitDTO selected = (hitY.distance < hitX.distance) ? hitY : hitX;
 
-    rayDistances[x] = dist * cosf(angleFromCenter);
+    selected.distance *= cosf(angleFromCenter);
+
+    hits[x] = selected;
   }
 
-  return rayDistances;
+  return hits;
 }
-/*
- * Marches 4-vector vertically until a wall collision is detected
- * @param 4-vector
- * @param integer array representing game-space
- * @return distance to wall collision
- */
-float marchY(vec4 ray, Map *map, int worldScale) {
-  if (fabs(ray.dy) < 0.0001f) {
-    return INFINITY;
-  }
+
+// Vertical march
+WallHitDTO marchY(vec4 ray, Map *map, int worldScale) {
+  WallHitDTO result = {.distance = FLT_MAX, .wallType = 0};
+  if (fabs(ray.dy) < 0.0001f)
+    return result;
 
   int stepY;
   float rayY;
+  int currentTileY = (int)(ray.y / worldScale);
 
-  if (ray.dy < 0) {
-    stepY = -1;
-    rayY = floor(ray.y / worldScale) * worldScale;
-  } else {
+  if (ray.dy > 0) {
     stepY = 1;
-    rayY = ceil(ray.y / worldScale) * worldScale;
+    rayY = (currentTileY + 1) * worldScale;
+  } else {
+    stepY = -1;
+    rayY = currentTileY * worldScale;
   }
 
   float slope = ray.dx / ray.dy;
-  vec4 newVec = ray;
 
   while (1) {
-    float deltaY = rayY - newVec.y;
+    float deltaY = rayY - ray.y;
+    float newX = ray.x + slope * deltaY;
 
-    newVec.y = rayY;
-    newVec.x = ray.x + (slope * deltaY);
+    int intX = (int)(newX / worldScale);
+    int intY = (int)(rayY / worldScale);
+    if (stepY < 0)
+      intY -= 1;
 
-    int intRayX = (int)(newVec.x / worldScale);
-    int intRayY = (int)(newVec.y / worldScale);
+    if (intX < 0 || intX >= map->width || intY < 0 || intY >= map->height)
+      return result;
 
-    // FIX: Cast to float to avoid warning
-    if (stepY < 0 && fabs(newVec.y - (float)(intRayY * worldScale)) < 0.001f) {
-      intRayY -= 1;
-    }
-
-    if (intRayX < 0 || intRayX >= map->width || intRayY < 0 ||
-        intRayY >= map->height) {
-      return INFINITY;
-    }
-
-    if (map->tiles[intRayY][intRayX] == 1) {
-      return distance(ray, newVec);
+    int wallType = map->tiles[intY][intX];
+    if (wallType > 0) {
+      vec4 hitPoint = {newX, rayY, 0, 0};
+      result.distance = distance(ray, hitPoint);
+      result.wallType = wallType;
+      return result;
     }
 
     rayY += stepY * worldScale;
   }
 }
 
-float marchX(vec4 ray, Map *map, int worldScale) {
-  if (fabs(ray.dx) < 0.0001f) {
-    return INFINITY;
-  }
+// Horizontal march
+WallHitDTO marchX(vec4 ray, Map *map, int worldScale) {
+  WallHitDTO result = {.distance = FLT_MAX, .wallType = 0};
+  if (fabs(ray.dx) < 0.0001f)
+    return result;
 
   int stepX;
   float rayX;
+  int currentTileX = (int)(ray.x / worldScale);
 
-  if (ray.dx < 0) {
-    stepX = -1;
-    rayX = floor(ray.x / worldScale) * worldScale;
-  } else {
+  if (ray.dx > 0) {
     stepX = 1;
-    rayX = ceil(ray.x / worldScale) * worldScale;
+    rayX = (currentTileX + 1) * worldScale;
+  } else {
+    stepX = -1;
+    rayX = currentTileX * worldScale;
   }
 
   float slope = ray.dy / ray.dx;
-  vec4 newVec = ray;
 
   while (1) {
-    float deltaX = rayX - newVec.x;
+    float deltaX = rayX - ray.x;
+    float newY = ray.y + slope * deltaX;
 
-    newVec.x = rayX;
-    newVec.y = ray.y + (slope * deltaX);
+    int intX = (int)(rayX / worldScale);
+    int intY = (int)(newY / worldScale);
+    if (stepX < 0)
+      intX -= 1;
 
-    int intRayX = (int)(newVec.x / worldScale);
-    int intRayY = (int)(newVec.y / worldScale);
+    if (intX < 0 || intX >= map->width || intY < 0 || intY >= map->height)
+      return result;
 
-    // FIX: Cast to float to avoid warning
-    if (stepX < 0 && fabs(newVec.x - (float)(intRayX * worldScale)) < 0.001f) {
-      intRayX -= 1;
-    }
-
-    if (intRayX < 0 || intRayX >= map->width || intRayY < 0 ||
-        intRayY >= map->height) {
-      return INFINITY;
-    }
-
-    if (map->tiles[intRayY][intRayX] == 1) {
-      return distance(ray, newVec);
+    int wallType = map->tiles[intY][intX];
+    if (wallType > 0) {
+      vec4 hitPoint = {rayX, newY, 0, 0};
+      result.distance = distance(ray, hitPoint);
+      result.wallType = wallType;
+      return result;
     }
 
     rayX += stepX * worldScale;

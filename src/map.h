@@ -31,6 +31,9 @@ static inline Map generate_map(int width, int height) {
     }
   }
 
+  map.tiles[2][3] = 2;
+  map.tiles[4][5] = 3;
+  map.tiles[6][7] = 4;
   return map;
 }
 

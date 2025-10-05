@@ -1,6 +1,7 @@
 #ifndef RENDER_H
 #define RENDER_H
 
+#include "wallHitDto.h"
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
@@ -18,9 +19,9 @@ typedef struct {
  * @param x column to draw wall
  * @param height height of wall
  */
-void drawWall(RenderContext *renderContext, int x, float height);
+void drawWall(RenderContext *renderContext, int x, WallHitDTO hit);
 
-void drawScreen(RenderContext *renderContext, float *distances);
+void drawScreen(RenderContext *renderContext, WallHitDTO *hits);
 
 void renderText(RenderContext *renderContext, const char *message);
 

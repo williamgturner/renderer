@@ -9,6 +9,7 @@
 #include "map.h"
 #include "raycast.h"
 #include "render.h"
+#include "wallHitDto.h"
 #include <math.h>
 
 /* We will use this renderer to draw into this window every frame. */
@@ -51,7 +52,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   ctx->height = WINDOW_HEIGHT;
 
   game = malloc(sizeof(GameSpace));
-  vec4 initialPos = {128, 128, 1, 0};
+  vec4 initialPos = {128, 128, 0, 1};
   Camera cam = {initialPos, 5, M_PI / 2};
   game->camera = cam;
   game->worldScale = 64;
@@ -90,9 +91,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
   SDL_RenderClear(renderer);
   handleInput(game, elapsed);
 
-  float *distances = raycastLoop(WINDOW_WIDTH, game);
+  WallHitDTO *hits = raycastLoop(WINDOW_WIDTH, game);
 
-  drawScreen(ctx, distances);
+  drawScreen(ctx, hits);
+
+  free(hits);
 
   char *camVecStr = vecToString(game->camera.pos);
   renderText(ctx, camVecStr);

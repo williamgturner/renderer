@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdbool.h>
 
-static InputConfig config = {150.0f, 2.0f};
+static InputConfig config = {200.0f, 2.0f};
 
 InputConfig createInputConfig(float moveSpeed, float rotSpeed) {
   InputConfig cfg = {moveSpeed, rotSpeed};

@@ -4,12 +4,11 @@
 #include "gamespace.h"
 #include "map.h"
 #include "vector4.h"
+#include "wallHitDto.h"
+#include <stdlib.h>
 
-float *raycastLoop(int numRays, GameSpace *world);
-
-float marchY(vec4 p0, Map *map, int worldScale);
-float marchX(vec4 p0, Map *map, int worldScale);
-
-int detectWall(vec4 v, Map *map);
+WallHitDTO *raycastLoop(int numRays, GameSpace *game);
+WallHitDTO marchY(vec4 p0, Map *map, int worldScale);
+WallHitDTO marchX(vec4 p0, Map *map, int worldScale);
 
 #endif
