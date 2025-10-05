@@ -19,7 +19,7 @@ void renderText(RenderContext *renderContext, const char *message) {
 
     if (!text) {
         SDL_Log("Couldn't create text: %s\n", SDL_GetError());
-        return;  // just return early
+        return;
     }
 
     texture = SDL_CreateTextureFromSurface(renderContext->renderer, text);

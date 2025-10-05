@@ -70,7 +70,6 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     const Uint64 now = SDL_GetTicks();
     const float elapsed = ((float) (now - last_time)) / 1000.0f;  /* seconds since last iteration */
     int i;
-
     last_time = now;
 
 
@@ -80,8 +79,6 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     drawWall(ctx, 400, 300);
     renderText(ctx, "Test...");
-
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
     SDL_RenderPresent(renderer);
     return SDL_APP_CONTINUE;}
