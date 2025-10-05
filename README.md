@@ -4,8 +4,8 @@ A raycasting renderer inspired by _Wolfenstein 3D_
 
 ## dependencies
 
-- SDL3
-- SDL3_TTF
+- [SDL3](https://wiki.libsdl.org/SDL3/FrontPage)
+- [SDL_ttf](https://wiki.libsdl.org/SDL3_ttf/FrontPage)
 
 ## usage
 
