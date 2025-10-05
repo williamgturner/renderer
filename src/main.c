@@ -76,7 +76,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     return SDL_APP_FAILURE;
   }
 
-  last_time = SDL_GetTicks();
+  last_time = SDL_GetPerformanceCounter();
 
   return SDL_APP_CONTINUE;
 }
@@ -89,19 +89,21 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 }
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
-  const Uint64 now = SDL_GetTicks();
-  const float elapsed = ((float)(now - last_time)) / 1000.0f;
-  int i;
+  Uint64 now = SDL_GetPerformanceCounter();
+  Uint64 freq = SDL_GetPerformanceFrequency();
+  float deltaTime = (float)(now - last_time) / freq;
   last_time = now;
+
+  if (deltaTime > 0.1f)
+    deltaTime = 0.1f;
 
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(renderer);
-  handleInput(game, elapsed);
+
+  handleInput(game, deltaTime);
 
   WallHitDTO *hits = raycastLoop(WINDOW_WIDTH, game);
-
   drawScreen(ctx, hits);
-
   free(hits);
 
   char *camVecStr = vecToString(game->camera.pos);
@@ -109,6 +111,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
   free(camVecStr);
 
   SDL_RenderPresent(renderer);
+
   return SDL_APP_CONTINUE;
 }
 
