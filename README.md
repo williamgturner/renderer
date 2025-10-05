@@ -28,5 +28,5 @@ cd build
 
 ## acknowledgements
 
-Font: [Home Video Font](https://ggbot.itch.io/home-video-font)
-Texture: [Quake-like Sci-fi 64x64](https://level-eleven-games.itch.io/quake-like-texture-pack)
+- Font: [Home Video Font](https://ggbot.itch.io/home-video-font)
+- Texture: [Quake-like Sci-fi 64x64](https://level-eleven-games.itch.io/quake-like-texture-pack)
