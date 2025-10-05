@@ -18,7 +18,9 @@ typedef struct {
  * @param x column to draw wall
  * @param height height of wall
  */
-void drawWall(RenderContext *renderContext, int x, int height);
+void drawWall(RenderContext *renderContext, int x, float height);
+
+void drawScreen(RenderContext *renderContext, float *distances);
 
 void renderText(RenderContext *renderContext, const char *message);
 

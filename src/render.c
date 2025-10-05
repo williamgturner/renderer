@@ -4,14 +4,21 @@
 
 static SDL_Texture *texture = NULL;
 
-void drawWall(RenderContext *renderContext, int x, int height) {
+void drawScreen(RenderContext *renderContext, float *distances) {
+  for (int x = 0; x < renderContext->width; x++) {
+    drawWall(renderContext, x, distances[x]);
+  }
+}
+
+void drawWall(RenderContext *renderContext, int x, float distance) {
   const int SCREEN_HEIGHT = renderContext->height;
   const int SCREEN_WIDTH = renderContext->width;
-  int wall_top = (SCREEN_HEIGHT / 2 - height / 2);
-  int wall_bottom = wall_top + height;
+  int wallHeight = (int)((64 * SCREEN_HEIGHT) / distance); // remove magic num
 
-  SDL_SetRenderDrawColor(renderContext->renderer, 255, 255, 255,
-                         SDL_ALPHA_OPAQUE);
+  int wall_top = (SCREEN_HEIGHT / 2 - wallHeight / 2);
+  int wall_bottom = wall_top + wallHeight;
+
+  SDL_SetRenderDrawColor(renderContext->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderLine(renderContext->renderer, x, 0, x, wall_top);
   SDL_RenderLine(renderContext->renderer, x, wall_bottom, x, SCREEN_HEIGHT);
 

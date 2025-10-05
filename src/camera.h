@@ -7,6 +7,6 @@ typedef struct {
   vec4 pos;
   float speed;
   float fov;
-} camera;
+} Camera;
 
 #endif

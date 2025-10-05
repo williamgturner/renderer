@@ -17,6 +17,7 @@ add_executable(renderer WIN32
     src/render.c
     src/raycast.c
     src/vector4.c
+    src/input.c
 )
 
 # Link to the actual SDL3 library.

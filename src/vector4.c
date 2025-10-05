@@ -35,21 +35,24 @@ void vecAddInPlace(vec4 *v1, vec4 v2) {
   v1->dy += v2.dy;
 }
 
+float distance(vec4 v0, vec4 v1) {
+  float dx = v1.x - v0.x;
+  float dy = v1.y - v0.y;
+  return (float)sqrt(dx * dx + dy * dy);
+}
+
 void vecPrint(vec4 v0) {
   printf("Vec4(x=%.2d, y=%.2d, dx=%.2f, dy=%.2f)\n", v0.x, v0.y, v0.dx, v0.dy);
 }
 
 // Returns a dynamically allocated string representing the vec4
 char *vecToString(vec4 v0) {
-  // Allocate enough memory for the string
-  // Adjust size if you expect very large numbers
   char *buffer = malloc(100);
   if (!buffer)
-    return NULL; // check malloc success
+    return NULL;
 
-  // Format the string into the buffer
   snprintf(buffer, 100, "Vec4(x=%.2d, y=%.2d, dx=%.2f, dy=%.2f)", v0.x, v0.y,
            v0.dx, v0.dy);
 
-  return buffer; // caller must free
+  return buffer;
 }

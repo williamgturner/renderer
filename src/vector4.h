@@ -18,6 +18,8 @@ vec4 vecAdd(vec4 v1, vec4 v2);
  */
 void vecAddInPlace(vec4 *v1, vec4 v2);
 
+float distance(vec4 v0, vec4 v1);
+
 void vecPrint(vec4 v0);
 
 char *vecToString(vec4 v0);

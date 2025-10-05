@@ -2,11 +2,12 @@
 #define GAMESPACE_H
 
 #include "camera.h"
+#include "map.h"
 
 typedef struct {
-  camera camera;
+  Camera camera;
   int worldScale;
-  int map[100];
+  Map map;
 } GameSpace;
 
 #endif

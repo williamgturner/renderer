@@ -5,6 +5,8 @@
 #include <stdlib.h>
 
 #include "gamespace.h"
+#include "input.h"
+#include "map.h"
 #include "raycast.h"
 #include "render.h"
 #include <math.h>
@@ -50,24 +52,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
   game = malloc(sizeof(GameSpace));
   vec4 initialPos = {128, 128, 1, 0};
-  camera cam = {initialPos, 1, M_PI / 2};
+  Camera cam = {initialPos, 5, M_PI / 2};
   game->camera = cam;
   game->worldScale = 64;
-  int map[100]; // 10x10 flattened into 1D
-
-  for (int y = 0; y < 10; y++) {
-    for (int x = 0; x < 10; x++) {
-      if (y == 0 || y == 9 || x == 0 || x == 9) {
-        map[y * 10 + x] = 1; // wall
-      } else {
-        map[y * 10 + x] = 0;
-      }
-    }
-  }
-  raycastLoop(WINDOW_WIDTH, game);
-
-  // copy into your GameSpace struct
-  memcpy(game->map, map, sizeof(map));
+  game->map = generate_map(10, 10);
 
   /* Open the font */
   ctx->font = TTF_OpenFont("../assets/fonts/HomeVideo-BLG6G.ttf", 15);
@@ -100,8 +88,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0,
                          SDL_ALPHA_OPAQUE); /* black, full alpha */
   SDL_RenderClear(renderer);
+  handleInput(game, elapsed);
 
-  drawWall(ctx, 400, 300);
+  float *distances = raycastLoop(WINDOW_WIDTH, game);
+
+  drawScreen(ctx, distances);
 
   char *camVecStr = vecToString(game->camera.pos);
   renderText(ctx, camVecStr);
@@ -119,6 +110,7 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     }
     free(ctx);
   }
+  free_map(&game->map);
   free(game);
   TTF_Quit();
 }
