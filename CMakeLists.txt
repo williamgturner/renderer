@@ -15,6 +15,8 @@ add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 add_executable(renderer WIN32
     src/main.c
     src/render.c
+    src/raycast.c
+    src/vector4.c
 )
 
 # Link to the actual SDL3 library.
