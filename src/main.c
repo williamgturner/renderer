@@ -21,6 +21,8 @@ static GameSpace *game = NULL;
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
+#define TARGET_FPS 60
+#define FRAME_DELAY_MS (1000 / TARGET_FPS)
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   int i;
@@ -91,21 +93,23 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
   Uint64 now = SDL_GetPerformanceCounter();
   Uint64 freq = SDL_GetPerformanceFrequency();
-  float deltaTime = (float)(now - last_time) / freq;
-  last_time = now;
 
-  // Clamp max to avoid huge spikes
+  static Uint64 last_time = 0;
+  if (last_time == 0)
+    last_time = now;
+
+  float deltaTime = (float)(now - last_time) / freq;
+
+  // Clamp deltaTime
   if (deltaTime > 0.1f)
     deltaTime = 0.1f;
-
-  // Clamp min to avoid too-small movement
   if (deltaTime < 0.001f)
     deltaTime = 0.001f;
 
+  last_time = now;
+
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(renderer);
-
-  SDL_Log("delta: %.5f", deltaTime);
 
   handleInput(game, deltaTime);
 
@@ -118,6 +122,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
   free(camVecStr);
 
   SDL_RenderPresent(renderer);
+
+  Uint64 frameTimeMs = (SDL_GetPerformanceCounter() - now) * 1000 / freq;
+  if (frameTimeMs < FRAME_DELAY_MS) {
+    SDL_Delay(FRAME_DELAY_MS - frameTimeMs);
+  }
 
   return SDL_APP_CONTINUE;
 }
