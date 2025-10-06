@@ -94,11 +94,18 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
   float deltaTime = (float)(now - last_time) / freq;
   last_time = now;
 
+  // Clamp max to avoid huge spikes
   if (deltaTime > 0.1f)
     deltaTime = 0.1f;
 
+  // Clamp min to avoid too-small movement
+  if (deltaTime < 0.001f)
+    deltaTime = 0.001f;
+
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(renderer);
+
+  SDL_Log("delta: %.5f", deltaTime);
 
   handleInput(game, deltaTime);
 
